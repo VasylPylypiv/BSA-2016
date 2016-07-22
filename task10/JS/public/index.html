@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX Chat</title>
+</head>
+<body>
+    <div>
+        <input type="text" placeholder="Username" id="nameInput">
+        <input type="button" value="Ok" id="nameButton">
+    </div>
+    <ul id="messages"></ul>
+    <div>
+        <textarea id="text" cols="20" rows="10"></textarea>
+        <input type="button" value="Send" id="textSubmit">
+    </div>
+</body>
+<script>
+    (function () {
+        var nameButton = document.getElementById('nameButton'),
+            nameInput = document.getElementById('nameInput'),
+            messages = document.getElementById('messages'),
+            text = document.getElementById('text'),
+            textSubmit = document.getElementById('textSubmit');
+
+        var userName = 'User1';
+        nameButton.onclick = function () {
+            userName = nameInput.value || 'User1';
+        };
+
+        textSubmit.onclick = function () {
+            var data = {
+                name : userName,
+                text : text.value
+            };
+
+            text.value = '';
+            ajaxRequest({
+                method : 'POST',
+                url : '/messages',
+                data : data
+            })
+            
+        };
+
+        var ajaxRequest = function (options) {
+            var url = options.url || '/',
+                method = options.method || 'GET',
+                callback = options.callback || function () {},
+                data = options.data || {},
+                xmlHTTP = new XMLHttpRequest();
+            xmlHTTP.open(method, url, true);
+            xmlHTTP.setRequestHeader('Content-Type', 'application/json');
+            xmlHTTP.send(JSON.stringify(data));
+            xmlHTTP.onreadystatechange = function () {
+                if (xmlHTTP.status == 200 && xmlHTTP.readyState == 4) {
+                      callback(xmlHTTP.responseText)
+                }
+            }
+        };
+
+        var getData = function () {
+            ajaxRequest({
+                url: '/messages',
+                method: 'GET',
+                callback: function (msg) {
+                    var msg = JSON.parse(msg);
+                    messages.innerHTML = '';
+                    for(var i in msg) {
+                        if(msg.hasOwnProperty(i)) {
+                            var el = document.createElement('li');
+                            el.innerText = msg[i].name + ': ' + msg[i].text;
+                            messages.appendChild(el);
+                        }
+                    }
+                    
+                }
+            })
+            
+        };
+
+        getData();
+
+        setInterval(function () {
+            getData();
+        }, 1000);
+    })();
+</script>
+</html>
