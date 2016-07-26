@@ -1,0 +1,15 @@
+<div class="main" ngController="ChatController as chat">
+<ul id="messages">
+		<li ng-repeat="mess in chat.messages">
+		<div>
+			<div><span>Username: <b>{{message.author}}</b></span></div>
+			<div><span>text: {{message.text}}</span></div>
+		</div>
+			
+		</li>
+	</ul>
+	<div>
+		<textarea id="text" ng-model="chat.messageText" cols="30" rows="10"></textarea>
+		<input type="button" ng-click="chat.addMessage()" value="Send" id="textSubmit">
+</div>
+</div>
